@@ -23,10 +23,10 @@ fw_obj.initalize(sample_dictionary,5)
 #Compute distance matrix
 fw_obj.compute_distance_matrix()
 
-#Recompute distance matrix by removing an edge
-#Format is (starting vertex, ending vertex)
+#Recompute distance matrix by removing multiple edges
+#Input a list of tuples, each tuple representing an edge
 #Remember: Edge must be part of the graph!
-fw_obj.recompute_distance_matrix(4,5)
+fw_obj.recompute_distance_matrix([(3,4),(2,5),(2,3)])
 """
 
 #Define Infinity
@@ -134,27 +134,30 @@ class FWAlgorithm:
         #self.display_distance_matrix()
         #self.display_path_matrix()
 
-    def recompute_distance_matrix(self,origin_vertex,destination_vertex):
-
-        deleted_edge=[origin_vertex,destination_vertex]
-        print("Edge to be deleted: ",deleted_edge)
+    #affected_edges=[(3,4),(2,5)]
+    def recompute_distance_matrix(self,delete_edges):
+        #deleted_edge=[origin_vertex,destination_vertex]
+        #print("Edge to be deleted: ",deleted_edge)
 
         affected_edges=[]
 
         #Reset all affected paths
         #Reset all distances to INFINITY for affected edges
-        for i in range(self.number_of_vertex):
-            for j in range(self.number_of_vertex):
-                if str(self.path_matrix[i][j])[1:-1].find(str(deleted_edge)[1:-1])>=0:
-                   print("This path ",i+1," to ",j+1," needs to be reworked")
-                   self.path_matrix[i][j]=self.path_matrix_backup[i][j]
-                   self.distance_matrix[i][j]=self.adjacency_matrix[i][j]
-                   affected_edges.append([i,j])
+        for k in delete_edges:
+            for i in range(self.number_of_vertex):
+                for j in range(self.number_of_vertex):
+                    if str(self.path_matrix[i][j])[1:-1].find(str(k)[1:-1])>=0:
+                       print("This path ",i+1," to ",j+1," needs to be reworked")
+                       if k not in affected_edges:
+                           self.path_matrix[i][j]=self.path_matrix_backup[i][j]
+                           self.distance_matrix[i][j]=self.adjacency_matrix[i][j]
+                           affected_edges.append([i,j])
+
+            #Delete the edge
+            self.distance_matrix[k[0]-1][k[1]-1]=INFINITY
+            self.path_matrix[k[0]-1][k[1]-1].clear()
+                           
         print("Affected edges: ",affected_edges)
-        
-        #Delete the edge
-        self.distance_matrix[origin_vertex-1][destination_vertex-1]=INFINITY
-        self.path_matrix[origin_vertex-1][destination_vertex-1].clear()
 
         #Computing Intermediate Distance Matrix for affected edges
         for k in range(self.number_of_vertex):
@@ -170,6 +173,6 @@ class FWAlgorithm:
                         print("Computing for edges ",i,j)
                         self.distance_matrix[i][j]=self.distance_matrix[i][k]+self.distance_matrix[k][j]
                         self.path_matrix[i][j]=self.path_matrix[i][k]+self.path_matrix[k][j][1:]
-        
+
         self.display_distance_matrix()
         self.display_path_matrix()
