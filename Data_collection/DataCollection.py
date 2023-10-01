@@ -3,7 +3,7 @@ import xml.etree.ElementTree as ET
 import matplotlib.pyplot as plt
 
 # Load the OSM data from an XML file
-osm_file = "map_csuf.osm"
+osm_file = "../Sample_Datasets/map_csuf.osm"
 tree = ET.parse(osm_file)
 root = tree.getroot()
 
