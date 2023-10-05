@@ -98,7 +98,7 @@ class FWAlgorithm:
         for edge in edge_dict:
             self.distance_matrix[edge[0]-1][edge[1]-1]=edge_dict[edge]
             
-            self.path_matrix[edge[0]-1][edge[1]-1].extend([edge[0]+1,edge[1]+1])
+            self.path_matrix[edge[0]-1][edge[1]-1].extend([edge[0],edge[1]])
 
         self.adjacency_matrix=copy.deepcopy(self.distance_matrix)
 
