@@ -1,2 +1,5 @@
-/Sample_Datasets
-/cache
+__pycache__
+Sample_Datasets
+cache
+proj2env
+
