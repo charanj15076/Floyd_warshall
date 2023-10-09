@@ -13,21 +13,11 @@ fw_obj=FWAlgorithm()
 #Value represents the edge weight.
 sample_dictionary={"1,2":5,"1,4":6,"2,5":7,"2,3":1,"3,1":3,"3,4":4,"4,5":3,"4,3":2,"5,4":5,"5,1":2}
 
-#Pass the graph and number of vertices to the method
-fw_obj.initalize(sample_dictionary,5)
+#Pass the graph
+fw_obj.initalize(sample_dictionary)
 
 #Compute distance matrix
 fw_obj.compute_distance_matrix()
-
-#Recompute distance matrix by removing multiple edges
-#Input a list of tuples, each tuple representing an edge
-#Remember: Edge must be part of the graph!
-fw_obj.remove_edges([(3,4),(2,5),(2,3)])
-
-#Add matrices back to the graph
-#Input a list of tuples, each tuple representing an edge
-#Remember: Edge must be part of the graph!
-fw_obj.add_edges([(2,3),(2,5),(3,4),(3,1)])
 """
 import copy
 
@@ -85,7 +75,8 @@ class FWAlgorithm:
             print()
         print()
         return paths
-            
+
+    #Returns the initial distance matrix and path matrix in a dictionary format
     def initalize(self,edge_dictionary):
         global INFINITY
         edge_dict=dict()
@@ -100,9 +91,6 @@ class FWAlgorithm:
                 self.mapping[vertex_count]=k[1]
                 vertex_count+=1
             edge_dict[((list(self.mapping.keys())[list(self.mapping.values()).index(k[0])]),(list(self.mapping.keys())[list(self.mapping.values()).index(k[1])]))]=edge_dictionary[k]
-            
-        print(edge_dict)
-
         
         self.number_of_vertex=vertex_count-1
 
@@ -131,6 +119,7 @@ class FWAlgorithm:
         yield self.display_path_matrix()
         #return self.display_distance_matrix(),self.display_path_matrix()
 
+    #Returns the actual distance matrix and path matrix in a dictionary format
     def compute_distance_matrix(self):
         #Intermediate Distance Matrix
         for k in range(self.number_of_vertex):
@@ -244,41 +233,3 @@ class FWAlgorithm:
 
             yield self.display_distance_matrix()
             yield self.display_path_matrix()
-
-        """
-        edges_to_try=[]
-        #Adding all edges that could have a path in the added edges
-        #Assigning default values
-        for k in edges_to_add:
-            for i in range(self.number_of_vertex):
-                for j in range(self.number_of_vertex):
-                    if str(self.path_matrix_backup[i][j])[1:-1].find(str(k)[1:-1])>=0:
-                       print("This path ",i+1," to ",j+1," could use the new path")
-                       if k not in edges_to_try:
-                           #self.path_matrix[i][j]=self.path_matrix_backup[i][j]
-                           #self.distance_matrix[i][j]=self.adjacency_matrix[i][j]
-                           edges_to_try.append([i,j])
-
-            #Add the edge
-            self.distance_matrix[k[0]-1][k[1]-1]=self.adjacency_matrix[k[0]-1][k[1]-1]
-            self.path_matrix[k[0]-1][k[1]-1]=[k[0],k[1]]
-                           
-        print("Edges that can possibly be added: ",edges_to_try)
-
-        #Computing Intermediate Distance Matrix for all possible edges
-        for k in range(self.number_of_vertex):
-            print("For Iteration ",(k+1))
-            #Rows
-            for i in range(self.number_of_vertex):
-                for j in range(self.number_of_vertex):
-                    #Avoid unaffected edges
-                    if [i,j] not in edges_to_try:
-                        continue
-                    
-                    if (self.distance_matrix[i][k]+self.distance_matrix[k][j]) < self.distance_matrix[i][j]:
-                        print("Computing for edges ",i,j)
-                        self.distance_matrix[i][j]=self.distance_matrix[i][k]+self.distance_matrix[k][j]
-                        self.path_matrix[i][j]=self.path_matrix[i][k]+self.path_matrix[k][j][1:]
-
-        print(edges_to_try)
-        """
