@@ -238,5 +238,5 @@ class FWAlgorithm:
                         self.distance_matrix[i][j]=self.distance_matrix[i][edge[0]-1]+self.adjacency_matrix[edge[0]-1][edge[1]-1]+self.distance_matrix[edge[1]-1][j]
                         self.path_matrix[i][j]=self.path_matrix[i][edge[0]-1]+[k[1]]+self.path_matrix[edge[1]-1][j][1:]
 
-            yield self.display_distance_matrix()
-            yield self.display_path_matrix()
+        yield self.display_distance_matrix()
+        yield self.display_path_matrix()
