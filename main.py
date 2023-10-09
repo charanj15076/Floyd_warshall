@@ -44,4 +44,4 @@ Path_dict={(101, 101): [101], (101, 102): [101, 102], (101, 104): [101, 104], (1
 
 #distance_dict,path_dict=fw_obj.remove_edges([(102,103),(103,104),(102,105)])
 
-#distance_dict,path_dict=fw_obj.add_edges([(102,103),(102,105])
+#distance_dict,path_dict=fw_obj.add_edges({(102,103):0.5,(105,103):3})
