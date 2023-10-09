@@ -164,11 +164,12 @@ class FWAlgorithm:
                         #self.distance_matrix[i][j]=INFINITY
                         #self.path_matrix[i][j].clear()
                         if (self.mapping[i+1],self.mapping[j+1]) in self.deleted_edges:
-                            print(i+1,',',j+1,'already deleted')
+                            print(self.mapping[i+1],',',self.mapping[j+1],'already deleted')
                             self.distance_matrix[i][j]=INFINITY
                             self.path_matrix[i][j].clear()
                             self.display_distance_matrix()
                             self.display_path_matrix()
+                            self.adjacency_matrix[i][j]=INFINITY
                         else:
                             self.path_matrix[i][j]=[self.mapping[i+1],self.mapping[j+1]]
                             print(self.mapping[i+1],',',self.mapping[j+1],'adjacency matrix')
@@ -206,30 +207,36 @@ class FWAlgorithm:
         yield self.display_path_matrix()
            
     def add_edges(self,edges_to_add):
-        edges_to_add=[(list(self.mapping.keys())[list(self.mapping.values()).index(k[0])],list(self.mapping.keys())[list(self.mapping.values()).index(k[1])]) for k in edges_to_add]
+        #edges_to_add=[(list(self.mapping.keys())[list(self.mapping.values()).index(k[0])],list(self.mapping.keys())[list(self.mapping.values()).index(k[1])]) for k in edges_to_add]
         for k in edges_to_add:
             #Remove from Deleted Edge list
-            edge=(self.mapping[k[0]],self.mapping[k[1]])
-            self.deleted_edges.remove(edge)
-            print("Attempting to add: ",edge)
-            if self.distance_matrix[k[0]-1][k[1]-1]<=self.adjacency_matrix[k[0]-1][k[1]-1]:
+            edge=((list(self.mapping.keys())[list(self.mapping.values()).index(k[0])]),(list(self.mapping.keys())[list(self.mapping.values()).index(k[1])]))
+            #print(edge)
+            if k in self.deleted_edges:
+                self.deleted_edges.remove(k)
+            print("Attempting to add: ",k)
+            if self.distance_matrix[edge[0]-1][edge[1]-1]<edges_to_add[k]:
+                print("Not adding ",k," ,distance is already less")
                 continue
 
             #self.distance_matrix[k[0]-1][k[1]-1]=self.adjacency_matrix[k[0]-1][k[1]-1]
             #self.path_matrix[k[0]-1][k[1]-1]=[k[0],k[1]]
+            if edges_to_add[k]<self.adjacency_matrix[edge[0]-1][edge[1]-1]:
+                self.adjacency_matrix[edge[0]-1][edge[1]-1]=edges_to_add[k]
+            
             #Rows
             for i in range(self.number_of_vertex):
-                if self.distance_matrix[i][k[0]-1]==INFINITY:
+                if self.distance_matrix[i][edge[0]-1]==INFINITY:
                     continue
                 
                 for j in range(self.number_of_vertex):
-                    if i==j or self.distance_matrix[k[1]-1][j]==INFINITY:
+                    if i==j or self.distance_matrix[edge[1]-1][j]==INFINITY:
                         continue
 
-                    if self.distance_matrix[i][k[0]-1]+self.adjacency_matrix[k[0]-1][k[1]-1]+self.distance_matrix[k[1]-1][j]<self.distance_matrix[i][j]:
-                        print("For ",self.mapping[i+1],"->",self.mapping[j+1],":",self.distance_matrix[i][k[0]-1],'+',self.adjacency_matrix[k[0]-1][k[1]-1],'+',self.distance_matrix[k[1]-1][j],'<',self.distance_matrix[i][j])
-                        self.distance_matrix[i][j]=self.distance_matrix[i][k[0]-1]+self.adjacency_matrix[k[0]-1][k[1]-1]+self.distance_matrix[k[1]-1][j]
-                        self.path_matrix[i][j]=self.path_matrix[i][k[0]-1]+[self.mapping[k[1]]]+self.path_matrix[k[1]-1][j][1:]
+                    if self.distance_matrix[i][edge[0]-1]+self.adjacency_matrix[edge[0]-1][edge[1]-1]+self.distance_matrix[edge[1]-1][j]<self.distance_matrix[i][j]:
+                        print("For ",self.mapping[i+1],"->",self.mapping[j+1],":",self.distance_matrix[i][edge[0]-1],'+',self.adjacency_matrix[edge[0]-1][edge[1]-1],'+',self.distance_matrix[edge[1]-1][j],'<',self.distance_matrix[i][j])
+                        self.distance_matrix[i][j]=self.distance_matrix[i][edge[0]-1]+self.adjacency_matrix[edge[0]-1][edge[1]-1]+self.distance_matrix[edge[1]-1][j]
+                        self.path_matrix[i][j]=self.path_matrix[i][edge[0]-1]+[k[1]]+self.path_matrix[edge[1]-1][j][1:]
 
             yield self.display_distance_matrix()
             yield self.display_path_matrix()
