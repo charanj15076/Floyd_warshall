@@ -97,10 +97,20 @@ class Blockages(Resource):
         lng = json_data['lng']
 
         cur.execute("""
-            INSERT INTO blockages (geog)
-                VALUES ('POINT(%s %s)')
-            RETURNING id;
-            """, (lng, lat))
+            WITH ins AS (
+               INSERT INTO blockages (geog)
+               VALUES ('POINT(%s %s)')
+               ON CONFLICT (geog) DO UPDATE
+               SET    geog = NULL
+               WHERE  FALSE      -- never executed, but locks the row
+               RETURNING id
+               )
+            SELECT id FROM ins
+            UNION  ALL
+            SELECT id FROM blockages 
+            WHERE  geog = 'POINT(%s %s)'  -- only executed if no INSERT
+            LIMIT  1;
+            """, (lng, lat, lng, lat))
 
         new_id = cur.fetchone()[0]
 
@@ -135,7 +145,7 @@ class Blockages(Resource):
         conn.close()
 
         return {
-            "message": "Successfully added blockage.",
+            "message": "Successfully removed blockage.",
             "id": param_id,
             "status": "SUCCESS",
         }
