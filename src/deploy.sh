@@ -1,6 +1,6 @@
 ########### DEPLOYMENT INFO ###########
 
-## STEP 1 Set up Postgres/Postgis
+## STEP 1 Set up Python & Postgres/Postgis
 # - Install
 # - Create DB
 createdb cpsc535proj2
