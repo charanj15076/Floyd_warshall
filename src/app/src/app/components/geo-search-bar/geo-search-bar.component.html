@@ -1,0 +1,15 @@
+<ion-modal trigger="{{ trigger }}" [initialBreakpoint]="1" [breakpoints]="[0, 1]">
+    <ng-template>
+      <div class="block">
+        <ion-toolbar>
+          <ion-searchbar (ionChange)="search($any($event))" placeholder="{{ title }}"></ion-searchbar>
+        </ion-toolbar>
+        <div scrollY="true" class="results-container">
+          <ion-item *ngFor="let item of results" (click)="itemSelected(item)" lines="none" class="search-result">
+            <ion-label>{{ item.label }}</ion-label>
+          </ion-item>
+        </div>
+      </div>
+    </ng-template>
+</ion-modal>
+

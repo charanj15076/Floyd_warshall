@@ -1,0 +1,87 @@
+<ion-content [fullscreen]="true">
+  <div id="map"></div>
+
+  <ion-fab slot="fixed" vertical="top" horizontal="start">
+    <ion-row>
+      <ion-col>
+        <ion-button id="search-button" expand="block" shape="circle" class="ion-no-padding ion-no-margin">
+          <ion-icon slot="icon-only" name="search"></ion-icon>
+        </ion-button>
+      </ion-col>
+      <ion-col>
+        <ion-col>
+          <ion-button id="navigate-button" shape="circle" class="ion-no-padding ion-no-margin">
+            <ion-icon slot="icon-only" name="navigate"></ion-icon>
+          </ion-button>
+        </ion-col>
+      </ion-col>
+    </ion-row>
+  </ion-fab>
+  
+  <ion-fab slot="fixed" vertical="bottom" horizontal="end">
+    <ion-row>
+      <ion-col>
+        <ion-button id="current-location-button" shape="circle" class="ion-no-padding ion-no-margin" (click)="viewCurrentLocation()">
+          <ion-icon slot="icon-only" name="locate"></ion-icon>
+        </ion-button>
+      </ion-col>
+      <ion-col>
+        <ion-fab-button>
+          <ion-icon name="ellipsis-horizontal"></ion-icon>
+        </ion-fab-button>
+        <ion-fab-list side="top">
+          <ion-fab-button data-desc="Run a blockage simulation">
+            <ion-icon name="cog"></ion-icon>
+          </ion-fab-button>      
+          <ion-fab-button data-desc="Report a blockage" id="open-report-modal" (click)="focusLocationExists = hasFocusLocation()">
+            <ion-icon name="create"></ion-icon>
+          </ion-fab-button>    
+          <ion-fab-button data-desc="View blockages" (click)="viewBlockages()">
+            <ion-icon name="eye"></ion-icon>
+          </ion-fab-button>
+        </ion-fab-list>
+      </ion-col>
+    </ion-row>
+  </ion-fab>
+
+  <app-geo-search-bar
+    title="Search"
+    trigger="search-button"
+    (selectedChanged)="onsSearchResultSelected($event)"
+    #select
+  >
+  </app-geo-search-bar>
+
+  <app-geo-nav
+    title="Navigation"
+    trigger="navigate-button"
+    (selectedChanged)="onsSearchResultSelected($event)"
+    #navigate
+  >
+  </app-geo-nav>
+
+  <ion-modal #report_modal class="report-modal" trigger="open-report-modal" [initialBreakpoint]="1" [breakpoints]="[0, 1]">
+    <ng-template>
+      <div *ngIf="focusLocationExists; else other_content">
+        <div class="block valid">
+          <h3>Report Blockage</h3>
+          <div class="location-details">
+            <p>Latitude: {{ focusLocationLat }}</p>
+            <p>Longitude: {{ focusLocationLng }}</p>
+          </div>
+          <ion-button (click)="reportBlockage(); report_modal.dismiss()">Send</ion-button>
+        </div>
+      </div>
+    
+      <ng-template #other_content>
+        <div class="block">
+          <p class="error-message">
+            No marker detected. Please click a location on the map or use the search functionality to drop a pin on a desired location.
+          </p>
+        </div>
+      </ng-template>
+    </ng-template>
+  </ion-modal>
+</ion-content>
+
+

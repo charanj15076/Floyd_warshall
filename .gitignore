@@ -3,3 +3,9 @@ Sample_Datasets
 cache
 proj2env
 
+.angular
+.vscode
+android
+.env
+node_modules
+.DS_Store
