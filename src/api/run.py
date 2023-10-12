@@ -11,6 +11,7 @@ from flask import request
 from flask_restful import Resource, Api
 from flask_cors import CORS
 
+load_dotenv()
 
 app = flask.Flask(__name__)
 api = Api(app)
@@ -144,4 +145,4 @@ api.add_resource(Home, "/")
 api.add_resource(Blockages, "/blockages")
 
 if __name__ == "__main__":
-    app.run(debug=True, port=8080)
+    app.run(host="0.0.0.0", port=8080, debug=True)
