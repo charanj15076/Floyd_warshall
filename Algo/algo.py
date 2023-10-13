@@ -121,6 +121,7 @@ class FWAlgorithm:
     #Returns the actual distance matrix and path matrix in a dictionary format
     def compute_distance_matrix(self):
         #Intermediate Distance Matrix
+        relaxation_attempts=0
         for k in range(self.number_of_vertex):
             #print("For Iteration ",(k+1))
             #Rows
@@ -128,7 +129,7 @@ class FWAlgorithm:
                 for j in range(self.number_of_vertex):
                     #Avoid Useless Relexation attempt
                     if self.distance_matrix[i][k]==INFINITY or self.distance_matrix[k][j]==INFINITY:
-                        print("Avoiding useless relaxation attempt for",i+1,j+1)
+                        relaxation_attempts+=1
                         continue
                     
                     if (self.distance_matrix[i][k]+self.distance_matrix[k][j]) < self.distance_matrix[i][j]:
@@ -144,7 +145,7 @@ class FWAlgorithm:
                         raise NegativeCycleError("Negative Cycle Detected")
 
         #self.path_matrix_backup=copy.deepcopy(self.path_matrix)
-        yield self.display_distance_matrix()
+        yield relaxation_attempts
         yield self.display_path_matrix()
 
     def remove_edges(self,delete_edges):
