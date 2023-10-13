@@ -41,18 +41,6 @@ class FWAlgorithm:
         self.adjacency_matrix=list()
         #Store deleted edges. Helpful in removing edges.
         self.deleted_edges=list()
-        
-    def display_distance_matrix(self):
-        distance=dict()
-        for i in range(self.number_of_vertex):
-            #print(self.mapping[i+1],end='\t')
-            #row+=1
-            for j in range(self.number_of_vertex):
-                #print(self.distance_matrix[i][j],end='\t')
-                distance[(self.mapping[i+1],self.mapping[j+1])]=self.distance_matrix[i][j]
-            #print()
-        #print()
-        return distance
 
     def display_path_matrix(self):
         paths=dict()
@@ -112,10 +100,9 @@ class FWAlgorithm:
         self.adjacency_matrix=copy.deepcopy(self.distance_matrix)
 
         #print("Initial Distance Matrix")
-        yield self.display_distance_matrix()
 
         #print("Initial Path Matrix")
-        yield self.display_path_matrix()
+        return self.display_path_matrix()
         #return self.display_distance_matrix(),self.display_path_matrix()
 
     #Returns the actual distance matrix and path matrix in a dictionary format
@@ -135,8 +122,7 @@ class FWAlgorithm:
                     if (self.distance_matrix[i][k]+self.distance_matrix[k][j]) < self.distance_matrix[i][j]:
                         self.distance_matrix[i][j]=self.distance_matrix[i][k]+self.distance_matrix[k][j]
                         self.path_matrix[i][j]=self.path_matrix[i][k]+self.path_matrix[k][j][1:]
-
-            self.display_distance_matrix()
+                        
             self.display_path_matrix()
             
         #Check for negative cycles
@@ -167,7 +153,6 @@ class FWAlgorithm:
                             #print(self.mapping[i+1],',',self.mapping[j+1],'already deleted')
                             self.distance_matrix[i][j]=INFINITY
                             self.path_matrix[i][j].clear()
-                            self.display_distance_matrix()
                             self.display_path_matrix()
                             self.adjacency_matrix[i][j]=INFINITY
                         else:
@@ -176,7 +161,6 @@ class FWAlgorithm:
                             self.distance_matrix[i][j]=self.adjacency_matrix[i][j]
                             #self.path_matrix[i][j].clear()
                             #self.distance_matrix[i][j]=INFINITY
-                            self.display_distance_matrix()
                             self.display_path_matrix()
                         affected_edges.append([self.mapping[i+1],self.mapping[j+1]])
 
@@ -202,9 +186,7 @@ class FWAlgorithm:
                         self.distance_matrix[i][j]=self.distance_matrix[i][k]+self.distance_matrix[k][j]
                         self.path_matrix[i][j]=self.path_matrix[i][k]+self.path_matrix[k][j][1:]
 
-            
-        yield self.display_distance_matrix()
-        yield self.display_path_matrix()
+        return self.display_path_matrix()
            
     def add_edges(self,edges_to_add):
         #edges_to_add=[(list(self.mapping.keys())[list(self.mapping.values()).index(k[0])],list(self.mapping.keys())[list(self.mapping.values()).index(k[1])]) for k in edges_to_add]
@@ -237,6 +219,5 @@ class FWAlgorithm:
                         #print("For ",self.mapping[i+1],"->",self.mapping[j+1],":",self.distance_matrix[i][edge[0]-1],'+',self.adjacency_matrix[edge[0]-1][edge[1]-1],'+',self.distance_matrix[edge[1]-1][j],'<',self.distance_matrix[i][j])
                         self.distance_matrix[i][j]=self.distance_matrix[i][edge[0]-1]+self.adjacency_matrix[edge[0]-1][edge[1]-1]+self.distance_matrix[edge[1]-1][j]
                         self.path_matrix[i][j]=self.path_matrix[i][edge[0]-1]+[k[1]]+self.path_matrix[edge[1]-1][j][1:]
-
-        yield self.display_distance_matrix()
-        yield self.display_path_matrix()
+                        
+        return self.display_path_matrix()
