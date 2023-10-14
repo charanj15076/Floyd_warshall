@@ -1,8 +1,10 @@
 import { Component, ElementRef } from '@angular/core';
 import { formatDate } from '@angular/common';
-import { ToastController } from '@ionic/angular';
+import { LoadingController, Platform, ToastController } from '@ionic/angular';
 import { Geolocation } from '@capacitor/geolocation';
 import { BlockageService } from 'src/services/blockage.service';
+import { SimulationService } from 'src/services/simulation.service';
+import { RoutesService } from 'src/services/routes.service';
 
 import * as L from "leaflet";
 
@@ -48,9 +50,13 @@ export class HomePage {
   blockagesMarksMap = new Map<number, L.Marker>();
 
   constructor(
+    private loadingCtrl: LoadingController,
     private blockageService: BlockageService,
+    private simulationService: SimulationService,
+    private routesService: RoutesService,
     private elementRef: ElementRef,
-    private toastController: ToastController
+    private toastController: ToastController,
+    public platform: Platform
   ) {}
 
   ionViewDidEnter() {
@@ -81,7 +87,19 @@ export class HomePage {
 
   // on initial load, load the map
   async loadMap() {
-    const coordinates = await Geolocation.getCurrentPosition();
+    let coordinates: any;
+    if (!this.platform.is('cordova')) {
+      const getCoords = async () => {
+        const pos = await new Promise((resolve, reject) => {
+          navigator.geolocation.getCurrentPosition(resolve, reject);
+        });
+        return pos;
+      };
+      coordinates = await getCoords();
+    } else {
+      console.log('there');
+      coordinates = await Geolocation.getCurrentPosition();
+    }
     // console.log('Current position:', coordinates);
 
     this.initLat = coordinates.coords.latitude;
@@ -114,7 +132,18 @@ export class HomePage {
   async viewCurrentLocation() {
     this.presentToast('Centering viewport around current location.', 'warning')
 
-    const coordinates = await Geolocation.getCurrentPosition();
+    let coordinates: any;
+    if (!this.platform.is('cordova')) {
+      const getCoords = async () => {
+        const pos = await new Promise((resolve, reject) => {
+          navigator.geolocation.getCurrentPosition(resolve, reject);
+        });
+        return pos;
+      };
+      coordinates = await getCoords();
+    } else {
+      coordinates = await Geolocation.getCurrentPosition();
+    }
 
     this.initLat = coordinates.coords.latitude;
     this.initLng = coordinates.coords.longitude;
@@ -249,6 +278,102 @@ export class HomePage {
       this.blockagesMarksMap.delete(id);
       this.presentToast('Successfully removed the blockage.', 'success')
     });
+  }
+
+  // run the simulation
+  simulationRes: any = {};
+  polylines: any[] = [];
+  async runSimulation() {
+    this.clearMapLines();
+
+    // calculate viewport width/height -- bounds are square so we will get the larger value of the two
+    var bounds = this.myMap?.getBounds();
+    var width = this.myMap!.distance(bounds!.getNorthWest(), bounds!.getNorthEast());
+    var height = this.myMap!.distance(bounds!.getNorthWest(), bounds!.getSouthWest());
+    var distanceVal = Math.min(Math.max(width, height), 1000);  // limiting to 1000 meters because of performance issues
+
+    const loading = await this.loadingCtrl.create({
+      message: 'Calculating paths...',
+    });
+    loading.present();
+
+    this.simulationService.getSimulation(this.myMap!.getCenter(), distanceVal).subscribe( (res) => {
+      // show a loading screen
+      this.simulationRes = {
+        routes: JSON.parse(res.data.routes),
+      }
+
+      this.simulationRes.routes.features.forEach( (elem: any) => {
+        var pl = L.polyline(
+          L.GeoJSON.coordsToLatLngs(elem.geometry.coordinates, 0), {
+            color: 'red'
+          }).addTo(this.myMap!);
+        this.polylines.push(pl);
+      });
+
+      this.presentToast('All pairs shortest paths displayed.', 'success')
+      loading.dismiss();
+    });
+  }
+
+  // run routing tool
+  routesRes: any = {};
+  srcMrker: any;
+  dstMrker: any;
+  async displayShortestPaths() {
+    if (this.focusLocationLat == undefined || this.focusLocationLng == undefined) {
+      this.presentToast('No destination selected.', 'danger')
+      return;
+    }
+
+    this.clearMapLines();
+
+    const loading = await this.loadingCtrl.create({
+      message: 'Loading 5 shortest paths...',
+    });
+    loading.present();
+
+    const sourceLatLng = L.latLng(this.initLat, this.initLng)
+    const destinationLatLng = L.latLng(this.focusLocationLat, this.focusLocationLng)
+    this.routesService.getRoutes(sourceLatLng, destinationLatLng).subscribe( (res) => {
+      // show a loading screen
+      this.routesRes = {
+        routes: res.data,
+      }
+ 
+      // let colorList = ['#ff0000', '#4d4d4d', '#666666', '#808080', '#999999']
+      let colorList = ['#999999', '#808080', '#666666', '#4d4d4d', '#ff0000']
+
+      this.routesRes.routes.reverse().forEach( (elem: any, idx: number) => {
+        var route = JSON.parse(elem)
+        console.log(route)
+        route.features.forEach( (e: any) => {
+          var pl = L.polyline(
+            L.GeoJSON.coordsToLatLngs(e.geometry.coordinates, 0), {
+              color: colorList[idx]
+            }).addTo(this.myMap!);
+          this.polylines.push(pl);
+        });
+      });
+
+      this.srcMrker = L.marker(sourceLatLng, { icon: this.locationIcon }).addTo(this.myMap!);
+      this.srcMrker._icon.classList.add('routing-source');
+      this.dstMrker = L.marker(sourceLatLng, { icon: this.locationIcon }).addTo(this.myMap!);
+      this.dstMrker._icon.classList.add('routing-destination');
+
+      this.presentToast('Top 5 shortest paths displayed.', 'success')
+      loading.dismiss();
+    });
+  }
+
+  clearMapLines() {
+      if (this.srcMrker) this.myMap?.removeLayer(this.srcMrker);
+      if (this.dstMrker) this.myMap?.removeLayer(this.dstMrker);
+
+      this.polylines.forEach( (polyline: any) => {
+        this.myMap?.removeLayer(polyline);
+      })
+      this.polylines = [];
   }
 
 

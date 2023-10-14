@@ -9,3 +9,5 @@ android
 .env
 node_modules
 .DS_Store
+
+www.tar.gz

@@ -34,6 +34,7 @@ export class GeoSearchBarComponent  implements OnChanges {
     },
   });
   results: any[] = [];
+  showNoResults: boolean = false;
 
   selected: any;
 
@@ -43,6 +44,7 @@ export class GeoSearchBarComponent  implements OnChanges {
 
   // click handler
   itemSelected(item: object) {
+    this.showNoResults = false;
     this.selected = item;
     this.selectedChanged.emit(this.selected);
 
@@ -55,5 +57,6 @@ export class GeoSearchBarComponent  implements OnChanges {
   async search(event: SearchbarCustomEvent) {
     const searchTerm = event?.detail?.value?.toLowerCase();
     this.results = await this.provider.search({ query: searchTerm! });
+    this.showNoResults = true;
   }
 }

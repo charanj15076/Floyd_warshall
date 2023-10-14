@@ -25,7 +25,7 @@ cur.execute('CREATE TABLE blockages (id serial PRIMARY KEY,'
                                  'datetime_added timestamp DEFAULT CURRENT_TIMESTAMP);'
                                  )
 
-# Insert data into the table
+# Insert dummy data into the table
 
 # cur.execute('INSERT INTO blockages (geog, notes)'
 #             'VALUES (%s, %s)',

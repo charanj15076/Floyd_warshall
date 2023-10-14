@@ -1,4 +1,5 @@
 from Data_Collection.data_collect import data_collect
+from Algo.algo import FWAlgorithm
 
 distance_matrix=data_collect("Fullerton,California,USA",33.8781, -117.87957,33.87827, -117.87968,500)
 """

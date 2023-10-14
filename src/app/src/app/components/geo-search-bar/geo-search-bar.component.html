@@ -4,12 +4,16 @@
         <ion-toolbar>
           <ion-searchbar (ionChange)="search($any($event))" placeholder="{{ title }}"></ion-searchbar>
         </ion-toolbar>
-        <div scrollY="true" class="results-container">
+        <div scrollY="true" class="results-container" *ngIf="(results.length || !showNoResults); else no_results_messaging">
           <ion-item *ngFor="let item of results" (click)="itemSelected(item)" lines="none" class="search-result">
             <ion-label>{{ item.label }}</ion-label>
           </ion-item>
         </div>
+        <ng-template #no_results_messaging>
+          <p class="error-message ion-padding-horizontal">
+            No Results Found.
+          </p>
+        </ng-template>
       </div>
     </ng-template>
 </ion-modal>
-

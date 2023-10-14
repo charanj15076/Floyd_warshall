@@ -10,7 +10,7 @@
       </ion-col>
       <ion-col>
         <ion-col>
-          <ion-button id="navigate-button" shape="circle" class="ion-no-padding ion-no-margin">
+          <ion-button id="navigate-button" shape="circle" class="ion-no-padding ion-no-margin" (click)="displayShortestPaths()">
             <ion-icon slot="icon-only" name="navigate"></ion-icon>
           </ion-button>
         </ion-col>
@@ -30,7 +30,7 @@
           <ion-icon name="ellipsis-horizontal"></ion-icon>
         </ion-fab-button>
         <ion-fab-list side="top">
-          <ion-fab-button data-desc="Run a blockage simulation">
+          <ion-fab-button data-desc="Run Floyd-Warshall Simulation" (click)="runSimulation()">
             <ion-icon name="cog"></ion-icon>
           </ion-fab-button>      
           <ion-fab-button data-desc="Report a blockage" id="open-report-modal" (click)="focusLocationExists = hasFocusLocation()">
@@ -52,13 +52,13 @@
   >
   </app-geo-search-bar>
 
-  <app-geo-nav
+  <!-- <app-geo-nav
     title="Navigation"
     trigger="navigate-button"
     (selectedChanged)="onsSearchResultSelected($event)"
     #navigate
   >
-  </app-geo-nav>
+  </app-geo-nav> -->
 
   <ion-modal #report_modal class="report-modal" trigger="open-report-modal" [initialBreakpoint]="1" [breakpoints]="[0, 1]">
     <ng-template>

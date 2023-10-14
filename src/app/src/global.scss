@@ -39,6 +39,16 @@ ion-button[shape=circle] {
     filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.2));
 }
 
+.location-marker{
+    &.routing-source ion-icon {
+        color: #009900;
+    }
+
+    &.routing-destination ion-icon {
+        color: #800000;
+    }
+}
+
 .block {
     width: 100%;
     max-height: 500px;
@@ -47,4 +57,29 @@ ion-button[shape=circle] {
 
 .toast-notification {
     text-align: center;
+}
+
+.leaflet-popup-content {
+    line-height: 1.5em;
+
+    .delete {
+        background-color: #EA4C89;
+        border-radius: 8px;
+        box-sizing: border-box;
+        color: #FFFFFF;
+        cursor: pointer;
+        display: block;
+        font-weight: 500;
+        line-height: 1.2em;
+        margin: 0.5em auto;
+        padding: 10px 14px;
+        text-align: center;
+        transition: color 100ms;
+        touch-action: manipulation;
+  
+        &:hover,
+        &:focus {
+            background-color: #F082AC;
+        }
+    }
 }

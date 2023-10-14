@@ -37,7 +37,9 @@ def data_collect(city_name,source_latitude,source_longtitude,destination_latitud
     #print(destination_node)
 
     # Find the shortest path between the source and destination nodes
-    shortest_path = nx.shortest_path(graph, source_node, destination_node, weight='length')
+    shortest_path = list(ox.k_shortest_paths(graph, source_node, destination_node, weight='length', k=5))
+    print(shortest_path)
+    raise
 
     # Extract all nodes along the shortest path
     nodes_between_source_and_destination = graph.subgraph(shortest_path)
@@ -45,6 +47,7 @@ def data_collect(city_name,source_latitude,source_longtitude,destination_latitud
     # distance_matrix = dict(nx.all_pairs_dijkstra_path_length(nodes_between_source_and_destination,weight='length'))
 
     all_paths = list(nx.all_simple_paths(graph, source=source_node, target=destination_node,cutoff = 20))
+    print(all_paths)
 
     num_nodes = len(graph.nodes)
     # [[float('inf')] * num_nodes for _ in range(num_nodes)]
