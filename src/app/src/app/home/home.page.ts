@@ -358,7 +358,7 @@ export class HomePage {
 
       this.srcMrker = L.marker(sourceLatLng, { icon: this.locationIcon }).addTo(this.myMap!);
       this.srcMrker._icon.classList.add('routing-source');
-      this.dstMrker = L.marker(sourceLatLng, { icon: this.locationIcon }).addTo(this.myMap!);
+      this.dstMrker = L.marker(destinationLatLng, { icon: this.locationIcon }).addTo(this.myMap!);
       this.dstMrker._icon.classList.add('routing-destination');
 
       this.presentToast('Top 5 shortest paths displayed.', 'success')
